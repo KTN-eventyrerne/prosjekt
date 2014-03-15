@@ -18,7 +18,6 @@ class Client(object):
         self.send('Hello')
         received_data = self.connection.recv(1024).strip()
         print 'Received from server: ' + received_data
-        self.connection.close()
 
     def message_received(self, message, connection):
         pass
@@ -30,7 +29,7 @@ class Client(object):
         self.connection.sendall(data)
 
     def force_disconnect(self):
-        pass
+        self.connection.close()
 
 
 if __name__ == "__main__":
