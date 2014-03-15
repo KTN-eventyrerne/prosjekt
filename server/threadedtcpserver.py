@@ -12,6 +12,23 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     self.messages = []
     SocketServer.TCPServer.__init__(self,hostPort,clientHandler)
 	
+	def add_client(self, nickname, ClientHandler):
+		if not self.list.has_key(username)
+			self.clients[nickname]=ClientHandler
+
+    def send_to_all(self, msg_raw):
+        msg = username + " said @" + time.strftime("%H:%M") + ": " + msg_raw
+        self.messages.append(msg)
+        for clienthandler in self.list.itervalues():
+            clienthandler.send_to_client(msg)
+	
+    def remove_client(self, username):
+		if self.clients.has_key(username):
+			self.list.pop(username,None)
+		
+    def get_messages(self):
+        return self.messages
+	
 	
 if __name__ == "__main__":
     HOST = 'localhost'

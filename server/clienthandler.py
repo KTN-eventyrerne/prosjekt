@@ -1,5 +1,5 @@
 import SocketServer
-
+import threading
 import sys
 sys.path.append('../')
 import Message
@@ -42,51 +42,67 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 				msg.parse(data)
 				handle_request(msg)
 			else:
+				lock.acquire()
+				self.server.remove_client(self, self.nickname)
+				lock.release()
 				print 'Client disconnected!'
 
     def handle_request(self, msg):
         if msg.request is 'login':
-            if not valid_username(username):
+            if not valid_username(msg.username):
                 respond_illegal(msg)
                 return
-
-            if not available_username(username):
-                respond_taken(msg)
+            if not available_username(msg.username):
+                resp_username_taken(msg)
                 return
-
-            add_client(msg.username)
-            respond_success(msg)
+            resp_login_success(msg)
             return
 
         if msg.request is 'message':
-            send_to_all(msg)
+			lock.acquire()
+            self.server.send_to_all(msg)
+			lock.release()
             return
 
         if msg.request is 'logout':
             remove_client()
             return
 			
-	def respond_success(self, msg):
+	def send_to_client(self, msg):
+		m = Message()
+		m.response = 'message'
+		m.message = msg
+		m.serialize() 
+		self.connection.sendall(m)
+		
+	def resp_login_success(self, msg):
+		self.username = msg.username
+		#update the servers list of clients
+		lock.acquire()
+		self.server.add_client(self, self.username)
+		history = self.server.get_messages()
+		lock.release()
+		#send response to client
 		resp = Message()
 		resp.response = 'login'
 		resp.username = msg.username
-		resp.messages = get_messages()
-		resp.seialize() 
+		resp.messages = history
+		resp.serialize() 
 		self.connection.sendall(resp)
 		
-    def respond_illegal(self, msg):
+    def resp_username_illegal(self, msg):
 		resp = Message()
 		resp.response = 'login'
 		resp.error = 'Invalid username!'
 		resp.username = msg.username
-		resp.seialize() 
+		resp.serialize() 
 		self.connection.sendall(resp)
 
-    def respond_taken(self, msg):
+    def resp_username_taken(self, msg):
 		resp = Message()
 		resp.response = 'login'
 		resp.error = 'Nam ealready taken!'
 		resp.username = msg.username
-		resp.seialize() 
+		resp.serialize() 
 		self.connection.sendall(resp)
 			
