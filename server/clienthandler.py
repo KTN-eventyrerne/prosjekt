@@ -65,7 +65,15 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         if msg.request is 'logout':
             remove_client()
             return
-
+			
+	def respond_success(self, msg):
+		resp = Message()
+		resp.response = 'login'
+		resp.username = msg.username
+		resp.messages = get_messages()
+		resp.seialize() 
+		self.connection.sendall(resp)
+		
     def respond_illegal(self, msg):
 		resp = Message()
 		resp.response = 'login'
