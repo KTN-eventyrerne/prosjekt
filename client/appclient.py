@@ -35,8 +35,8 @@ class Appclient(object):
             #Waiting for a response from server, when response is received, waiting is set to false
             waiting = True
             while waiting:
-                received = client.pop_message() #if any msg in buffer
-                if received:
+                if client.buffer_length():
+                    received = client.pop_message() #if any msg in buffer
                     message = Message()
                     #message_recieved = client.message_received() #Stall until msg recived
                     message.pharse(recieved)
@@ -87,8 +87,8 @@ class Appclient(object):
 #This function checks the msg buffer in the client and if there is a message,
 #it acts accordingly...
     def recive_msg(self, client):
-        received = client.pop_message()
-        if received:
+        if client.buffer_length():
+            received = client.pop_message()
             message = Message()
             message.pharse(received)
             if message.response == 'logout' and message.error == 'Not logged in!':
@@ -103,8 +103,6 @@ class Appclient(object):
                 print message.message
             elif message.response == 'message' and message.error:
                 print message.error
-
-
 
 
 
