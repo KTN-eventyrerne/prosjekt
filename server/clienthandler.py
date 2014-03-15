@@ -44,23 +44,27 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 			else:
 				print 'Client disconnected!'
 
-    def handle_request(msg):
-        if msg.request is login:
+    def handle_request(self, msg):
+        if msg.request is 'login':
             if not valid_username(username):
                 respond_illegal(msg)
-            else if not available_username(username):
+                return
+
+            if not available_username(username):
                 respond_taken(msg)
-            else{
-                add_client(msg.username)
-                respond_success(msg)
-        }
-        else if msg.request is 'message'{
+                return
+
+            add_client(msg.username)
+            respond_success(msg)
+            return
+
+        if msg.request is 'message':
             send_to_all(msg)
-        }
-        else if msg.request is 'logout'{
+            return
+
+        if msg.request is 'logout':
             remove_client()
-        }
-    }
+            return
 
     def respond_illegal(self, msg):
 		resp = Message()
@@ -69,6 +73,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 		resp.username = msg.username
 		resp.seialize() 
 		self.connection.sendall(resp)
+
     def respond_taken(self, msg):
 		resp = Message()
 		resp.response = 'login'
