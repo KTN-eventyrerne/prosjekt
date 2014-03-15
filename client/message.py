@@ -1,4 +1,5 @@
 import json
+from StringIO import StringIO
 
 class Message(object):
 
@@ -8,8 +9,10 @@ class Message(object):
         self.response = ''
         self.error = ''
         self.username = ''
-        
+
     def parse(self, message):
+        #message = StringIO()
+        message = json.loads(message)
         self.request = message[0].get('request', '')
         self.message = message[0].get('message', '')
         self.response = message[0].get('response', '')
@@ -17,7 +20,7 @@ class Message(object):
         self.username = message[0].get('username', '')
 
         self.validate()
-        
+
     def serialize(self):
         self.validate()
 
@@ -32,7 +35,6 @@ class Message(object):
             jmsg.update({'error': self.error})
         if(self.username != ''):
             jmsg.update({'username': self.username})
- 
         return json.dumps([jmsg])
 
     def validate(self):
