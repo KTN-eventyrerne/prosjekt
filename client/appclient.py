@@ -12,7 +12,7 @@ from message import *
 class Appclient(object):
     
     #Start up
-    print "Hello and welcome!"
+    print 'Hello and welcome!'
     client = Client()
 
     def req_username(client):
@@ -20,11 +20,17 @@ class Appclient(object):
         while(requestUsername):
             input = raw_input('Select a user name: ')
             message = Message()
-            message.request = "login"
+            message.request = 'login'
             message.username = input
             client.send(message.serialize())
             message = Message()
-            client.message_received
+            message_recived = client.message_received() #Stall until msg recived
+            message.pharse(message_recived)
+            if message.response == 'login':
+                if message.error == 'Invalid username!':
+                    print message.error
+                    print 'Tray a new username.'
+                if message.
 
     
 
