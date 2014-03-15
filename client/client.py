@@ -23,14 +23,15 @@ class Client():
                 self.lock.acquire()
                 received_data = self.connection.recv(1024)
                 self.ko.append(received_data)
-                self.lock.release()
             except:
                 pass
+            finally:
+                self.lock.release()
 
     def buffer_len(self):
-        lock.acquire()
+        self.lock.acquire()
         length = len(self.ko)
-        lock.release()
+        self.lock.release()
         return length
 
     def message_pop(self):#, message, connection):
@@ -47,6 +48,6 @@ class Client():
         self.connection.close()
 
     def send(self, data):
-        self.lock.acquire()
+        #self.lock.acquire()
         self.connection.sendall(data)
-        self.lock.release()
+        #self.lock.release()

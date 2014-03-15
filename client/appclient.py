@@ -13,7 +13,7 @@ class Appclient(object):
 
     def __init__(self):
         self.username = ''
-        self.port = 9999#int(raw_input('what port? '))
+        self.port = 9993#int(raw_input('what port? '))
         self.ip = 'localhost'#raw_input('what ip? '))
         self.client = Client(self.ip, self.port)
 
@@ -30,20 +30,25 @@ class Appclient(object):
         while(requestUsername):
             #Request a username and login to server (send the username to server)
             input = raw_input('Select a user name: ')
+            print "input exepted"
             message = Message()
             message.request = 'login'
             message.username = input
+            print "Sending username"
             self.client.send(message.serialize())
             print "debug"
 
             #Waiting for a response from server, when response is received, waiting is set to false
             waiting = True
             while waiting:
-                if self.client.buffer_length():
-                    received = self.client.pop_message() #if any msg in buffer
+                if self.client.buffer_len():
+                    received = self.client.message_pop() #if any msg in buffer
                     message = Message()
                     #message_recieved = self.client.message_received() #Stall until msg recived
-                    message.pharse(recieved)
+                    print "Received msg: "
+                    print received
+                    message.parse(received)
+                    print "message parsed..."
                     #Response
                     if message.response == 'login':
                         if message.error == 'Invalid username!':
@@ -52,7 +57,7 @@ class Appclient(object):
                         elif message.error == 'Name allready taken!':
                             print message.error
                             print 'Tray a new username!'
-                        elif message.message == 'You are now loged in!':
+                        elif message.message == 'You are now logged in!':
                             print 'Server: ', message.message
                             self.username = message.username
                             requestUsername = False
@@ -68,20 +73,6 @@ class Appclient(object):
                 message = Message()
                 message.request = 'logout'
                 self.client.send(message.serialize())
-##                logout_unconfirmed
-##                while (logout_unconfirmed):
-##                    message_recieved = self.client.messegeRecived()
-##                    message = Message()
-##                    message.pharse(message_recieved)
-##                    if message.response == 'logout' and message.error == 'Not logged in!':
-##                        print message.error
-##                        run = False
-##                        logout_unconfirmed = False
-##                    else if message.response == 'logout' and message.error == 'Not logged in!':
-##                        print 'You are now loged out...'
-##                        run = False
-##                        logout_unconfirmed = False
-
             else:
                 message = Message()
                 message.request = 'message'
@@ -90,23 +81,30 @@ class Appclient(object):
 
 #This function checks the msg buffer in the self.client and if there is a message,
 #it acts accordingly...
-    def recive_msg(self):
-        if self.client.buffer_length():
-            received = self.client.pop_message()
-            message = Message()
-            message.pharse(received)
-            if message.response == 'logout' and message.error == 'Not logged in!':
-                print message.error
-                run = False
-                logout_unconfirmed = False
-            elif message.response == 'logout' and message.error == 'Not logged in!':
-                print 'You are now loged out...'
-                run = False
-                logout_unconfirmed = False
-            elif message.response == 'message' and not message.error:
-                print message.message
-            elif message.response == 'message' and message.error:
-                print message.error
+    def receive_msg(self):
+        while(True):
+            if self.client.buffer_len():
+                received = self.client.message_pop()
+                ##print received
+                message = Message()
+                message.parse(received)
+                if message.response == "logout" and message.error == "Not logged in!":
+                    print message.error
+                    run = False
+                    logout_unconfirmed = False
+                    print "logout error"
+                elif message.response == "logout":
+                    print "You are now loged out..."
+                    run = False
+                    logout_unconfirmed = False
+                    print "logout sucsess"
+                elif message.response == "message" and not message.error:
+                    print message.message, '\n'
+                    print "msg"
+                elif message.response == "message" and message.error:
+                    print message.error
+                    print "msgError"
+                else: print "Msg received, but something whent wrong...."
 
 
 
