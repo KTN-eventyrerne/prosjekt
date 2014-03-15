@@ -1,43 +1,52 @@
-'''
-KTN-project 2013 / 2014
-'''
-import argparse
 import socket
+import threading
 
-parser = argparse.ArgumentParser()
-parser.add_argument('host', help="Host address to listen on")
-parser.add_argument('port', type=int, help="Port to listen on")
-args = parser.parse_args()
 
-class Client(object):
-    def __init__(self):
+class Client():
+    def __init__(self, host, port):
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    def start(self, host, port):
         self.connection.connect((host, port))
-        self.send('Hello')
-        received_data = self.connection.recv(1024).strip()
-        print 'Received from server: ' + received_data
+        self.connection.settimeout(2)
 
-    def message_received(self, host, port):#, message, connection):
-        self.connection.connect((host, port))
-        received_data = self.connection.recv(1024)
-        return recived_data
-        #pass
+        self.exit = False
+        self.ko = []
+        self.lock = threading.Lock()
+        
+        self.thread = threading.Thread(target = self.recieve)
+        self.thread.setDaemon(True)
+        self.thread.start()
 
-    def connection_closed(self, connection):
-        pass
 
-    def send(self, data):
-        self.connection.sendall(data)
+    def recieve(self):
+        while(self.exit == False):
+            try:
+                self.lock.acquire()
+                received_data = self.connection.recv(1024)
+                self.ko.append(received_data)
+                self.lock.release()
+            except:
+                pass
 
-    def force_disconnect(self):
+    def buffer_len(self):
+        lock.acquire()
+        length = len(self.ko)
+        lock.release()
+        return length
+
+    def message_pop(self):#, message, connection):
+        self.lock.acquire()
+        ret = ''
+        if(len(self.ko) != 0):
+            ret = self.ko.pop(0)
+        self.lock.release()
+        return ret
+
+    def connection_closed(self):
+        self.exit = True
+        self.thread.join()
         self.connection.close()
 
-
-if __name__ == "__main__":
-    client = Client()
-    client.start(args.host, args.port)
-    appclient = Appclient()
-    appclient.reg_username(client)
-    client.force_disconnect()
+    def send(self, data):
+        lock.acquire()
+        self.connection.sendall(data)
+        lock.release()
