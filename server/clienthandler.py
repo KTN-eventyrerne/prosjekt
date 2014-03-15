@@ -33,30 +33,30 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         # Check if the data exists
         # (recv could have returned due to a disconnect)
         if data:
-            print data
-            # Return the string in uppercase
-            self.connection.sendall(data.upper())
+			#TODO:: do parsing in data
+            handle_request(data)
         else:
             print 'Client disconnected!'
 
-        def handle_request(msg):
-            if msg.request is login:
-                if is_illegal(username):
-                    respond_illegal(msg)
-                else if is_taken(username):
-                    respond_taken(msg)
-                else{
-                   add_client(msg.username)
-                   respond_success(msg)
-            }
-            else if msg.request is 'message'{
-                    send_to_all(msg)
-            }
-            else if msg.request is 'logout'{
-                remove_client()
-            }
+    def handle_request(msg):
+        if msg.request is login:
+            if not valid_username(username):
+                respond_illegal(msg)
+            else if not available_username(username):
+                respond_taken(msg)
+            else{
+                add_client(msg.username)
+                respond_success(msg)
         }
-        def is_illegal(self, string username)
-        def respond_illegal(self, msg)
-        def is_taken(self, string username)
-        def respond_illegal(self, msg)
+        else if msg.request is 'message'{
+            send_to_all(msg)
+        }
+        else if msg.request is 'logout'{
+            remove_client()
+        }
+    }
+
+        def respond_illegal(self, msg):
+			
+        def respond_illegal(self, msg):
+			
