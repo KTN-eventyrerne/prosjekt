@@ -2,7 +2,7 @@
 KTN-project 2013 / 2014
 '''
 import socket
-
+#for demo, pls delete
 
 class Client(object):
 
