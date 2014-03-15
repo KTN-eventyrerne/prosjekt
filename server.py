@@ -5,16 +5,19 @@ for implementing the chat server
 
 '''
 
+import argparse
+
 from clienthandler import ClientHandler
 from threadedtcpserver import ThreadedTCPServer
 
+parser = argparse.ArgumentParser()
+parser.add_argument('host', help="Host address to listen on")
+parser.add_argument('port', type=int, help="Port to listen on")
+args = parser.parse_args()
 
 if __name__ == "__main__":
-    HOST = 'localhost'
-    PORT = 9999
-
-    # Create the server, binding to localhost on port 9999
-    server = ThreadedTCPServer((HOST, PORT), ClientHandler)
+    # Create the server, binding to the user specified host and port
+    server = ThreadedTCPServer((args.host, args.port), ClientHandler)
 
     # Activate the server; this will keep running until you
     # interrupt the program with Ctrl-C
