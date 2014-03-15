@@ -19,8 +19,11 @@ class Client(object):
         received_data = self.connection.recv(1024).strip()
         print 'Received from server: ' + received_data
 
-    def message_received(self, message, connection):
-        pass
+    def message_received(self, host, port):#, message, connection):
+        self.connection.connect((host, port))
+        received_data = self.connection.recv(1024)
+        return recived_data
+        #pass
 
     def connection_closed(self, connection):
         pass
@@ -35,4 +38,6 @@ class Client(object):
 if __name__ == "__main__":
     client = Client()
     client.start(args.host, args.port)
+    appclient = Appclient()
+    appclient.reg_username(client)
     client.force_disconnect()
