@@ -13,6 +13,9 @@ class Appclient(object):
 
     def __init__(self):
         self.username = ''
+        self.port = 9999#int(raw_input('what port? '))
+        self.ip = 'localhost'#raw_input('what ip? '))
+        self.client = Client(self.ip, self.port)
 
     def startup(self):
         print 'Hello and welcome to this chatting application!'
@@ -21,7 +24,7 @@ class Appclient(object):
 #The username is sendt to server.
 #Wait until server respond.
 #If username is valid, store username and move on.
-    def req_username(self, client):
+    def req_username(self):
         #Aslong as we dont have a valid username(not logged in)
         requestUsername = True
         while(requestUsername):
@@ -30,15 +33,16 @@ class Appclient(object):
             message = Message()
             message.request = 'login'
             message.username = input
-            client.send(message.serialize())
+            self.client.send(message.serialize())
+            print "debug"
 
             #Waiting for a response from server, when response is received, waiting is set to false
             waiting = True
             while waiting:
-                if client.buffer_length():
-                    received = client.pop_message() #if any msg in buffer
+                if self.client.buffer_length():
+                    received = self.client.pop_message() #if any msg in buffer
                     message = Message()
-                    #message_recieved = client.message_received() #Stall until msg recived
+                    #message_recieved = self.client.message_received() #Stall until msg recived
                     message.pharse(recieved)
                     #Response
                     if message.response == 'login':
@@ -56,17 +60,17 @@ class Appclient(object):
 
 
 #This function waits for user input and send the message/CMD to the server.
-    def get_user_input(self, client):
+    def get_user_input(self):
         run = True
         while(run):
             input = raw_input('Type a message (press enter to send): ')
             if input == '\logout':
                 message = Message()
                 message.request = 'logout'
-                client.send(message.serialize())
+                self.client.send(message.serialize())
 ##                logout_unconfirmed
 ##                while (logout_unconfirmed):
-##                    message_recieved = client.messegeRecived()
+##                    message_recieved = self.client.messegeRecived()
 ##                    message = Message()
 ##                    message.pharse(message_recieved)
 ##                    if message.response == 'logout' and message.error == 'Not logged in!':
@@ -82,13 +86,13 @@ class Appclient(object):
                 message = Message()
                 message.request = 'message'
                 message.message = input
-                client.send(message.serialize())
+                self.client.send(message.serialize())
 
-#This function checks the msg buffer in the client and if there is a message,
+#This function checks the msg buffer in the self.client and if there is a message,
 #it acts accordingly...
-    def recive_msg(self, client):
-        if client.buffer_length():
-            received = client.pop_message()
+    def recive_msg(self):
+        if self.client.buffer_length():
+            received = self.client.pop_message()
             message = Message()
             message.pharse(received)
             if message.response == 'logout' and message.error == 'Not logged in!':

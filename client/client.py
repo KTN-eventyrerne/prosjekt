@@ -47,6 +47,6 @@ class Client():
         self.connection.close()
 
     def send(self, data):
-        lock.acquire()
+        self.lock.acquire()
         self.connection.sendall(data)
-        lock.release()
+        self.lock.release()

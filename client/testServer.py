@@ -10,6 +10,7 @@ conn, addr = s.accept()
 print 'Connected by', addr
 lol = ''
 while lol != 'exit':
-    lol = raw_input('something')
-    conn.send(lol)
+    #lol = raw_input('something')
+    conn.send('lol')
+    print conn.recv(1024)
 conn.close()
