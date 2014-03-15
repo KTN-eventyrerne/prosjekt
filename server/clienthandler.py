@@ -9,6 +9,17 @@ client.
 '''
 
 class ClientHandler(SocketServer.BaseRequestHandler):
+    def __init__(self):
+        users = []
+
+    def valid_username(self, name):
+        import re
+        return re.match('^\w+$', name)
+
+
+    def available_username(self, name):
+        return name not in users
+
     def handle(self):
         # Get a reference to the socket object
         self.connection = self.request
