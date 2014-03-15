@@ -1,11 +1,15 @@
 '''
 KTN-project 2013 / 2014
 '''
+import argparse
 import socket
 
+parser = argparse.ArgumentParser()
+parser.add_argument('host', help="Host address to listen on")
+parser.add_argument('port', type=int, help="Port to listen on")
+args = parser.parse_args()
 
 class Client(object):
-
     def __init__(self):
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -31,4 +35,5 @@ class Client(object):
 
 if __name__ == "__main__":
     client = Client()
-    client.start('localhost', 9999)
+    client.start(args.host, args.port)
+    client.force_disconnect()
