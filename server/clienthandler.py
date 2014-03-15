@@ -1,5 +1,9 @@
 import SocketServer
 
+import sys
+sys.path.append('../')
+import Message
+
 '''
 The RequestHandler class for our server.
 
@@ -28,15 +32,17 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         # Get the remote port number of the socket
         self.port = self.client_address[1]
         print 'Client connected @' + self.ip + ':' + str(self.port)
-        # Wait for data from the client
-        data = self.connection.recv(1024).strip()
-        # Check if the data exists
-        # (recv could have returned due to a disconnect)
-        if data:
-			#TODO:: do parsing in data
-            handle_request(data)
-        else:
-            print 'Client disconnected!'
+		while 1:
+			# Wait for data from the client
+			data = self.connection.recv(1024).strip()
+			# Check if the data exists
+			# (recv could have returned due to a disconnect)
+			if data:
+				msg = Message()
+				msg.parse(data)
+				handle_request(msg)
+			else:
+				print 'Client disconnected!'
 
     def handle_request(msg):
         if msg.request is login:
@@ -56,7 +62,12 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         }
     }
 
-        def respond_illegal(self, msg):
-			
-        def respond_illegal(self, msg):
+    def respond_illegal(self, msg):
+		resp = Message()
+		resp.response = 'login'
+		resp.error = 'Invalid username!'
+		resp.username = msg.username
+		resp.seialize() 
+		#TODO: send
+    def respond_taken(self, msg):
 			
