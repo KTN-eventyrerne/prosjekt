@@ -68,6 +68,12 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 		resp.error = 'Invalid username!'
 		resp.username = msg.username
 		resp.seialize() 
-		#TODO: send
+		self.connection.sendall(resp)
     def respond_taken(self, msg):
+		resp = Message()
+		resp.response = 'login'
+		resp.error = 'Nam ealready taken!'
+		resp.username = msg.username
+		resp.seialize() 
+		self.connection.sendall(resp)
 			
