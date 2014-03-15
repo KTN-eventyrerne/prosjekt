@@ -49,23 +49,24 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 
     def handle_request(self, msg):
         if msg.request is 'login':
-            if not valid_username(msg.username):
-                respond_illegal(msg)
+            if not self.valid_username(msg.username):
+                self.respond_illegal(msg)
                 return
-            if not available_username(msg.username):
-                resp_username_taken(msg)
+            if not self.available_username(msg.username):
+                self.resp_username_taken(msg)
                 return
-            resp_login_success(msg)
+            self.resp_login_success(msg)
             return
 
         if msg.request is 'message':
 			lock.acquire()
             self.server.send_to_all(msg)
 			lock.release()
+
             return
 
         if msg.request is 'logout':
-            remove_client()
+            self.remove_client()
             return
 			
 	def send_to_client(self, msg):
@@ -101,7 +102,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
     def resp_username_taken(self, msg):
 		resp = Message()
 		resp.response = 'login'
-		resp.error = 'Nam ealready taken!'
+		resp.error = 'Name already taken!'
 		resp.username = msg.username
 		resp.serialize() 
 		self.connection.sendall(resp)
