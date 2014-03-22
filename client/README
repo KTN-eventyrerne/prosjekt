@@ -1,0 +1,34 @@
+'''
+KTN-project 2014
+'''
+
+Updated: 17.03.14
+by: Thomas
+
+This is the client side.
+It currently works with a testServer.py
+Using local ip and port 1558.
+When server side is finished, testServer.py and test.py can be removed.
+
+Confirmed working:
+-login
+-message passing
+-lisen/receive message
+-send message
+-type message, just type in window. No "type a message"-message, 
+because it would lead to a messy screen....
+-logout
+
+IMPORTANT:
+-What about displaying username?
+-What about chatt session logg? See important 1 in appclient.py. 
+(and assignment description)
+
+
+TO RUN:
+1. run testServer.py
+2. run test.py, see appclient.py
+
+
+Comments:
+
